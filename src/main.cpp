@@ -45,31 +45,31 @@ void setupModify() {
   });
 }
 
-int getFanRpm()
-{
-  float rps = 0;                 // Variable mit Kommastelle für die Berechnung der Umdrehungen pro Sekunde
-  float umdrZeit = 0;            // Variable mit Kommastelle für die Zeit pro Umdrehung des Lüfters
-  float flankenZeit =0;          // Variable mit Kommastelle für die Zeit pro Puls des Lüfters 
+// int getFanRpm()
+// {
+//   float rps = 0;                 // Variable mit Kommastelle für die Berechnung der Umdrehungen pro Sekunde
+//   float umdrZeit = 0;            // Variable mit Kommastelle für die Zeit pro Umdrehung des Lüfters
+//   float flankenZeit =0;          // Variable mit Kommastelle für die Zeit pro Puls des Lüfters 
 
-  if ( fanSpeed < 1 ) {      
-    rpm = 0;
-  }
-  else {
-    analogWrite(PIN_FAN, 255);                 // Den Lüfter konstant mit Strom versorgen damit das Tachosignal funktioniert
-    delay(20);
-    for ( int retryCount=0; retryCount<2; retryCount++ ) {            
-      flankenZeit = pulseIn(PIN_TACHO, HIGH);    // Abfrage der Zeit pro Puls in Mikrosekunden    
-      if (flankenZeit>100) {
-        break;
-      }      
-    }      
-    analogWrite(PIN_FAN, fanSpeed);            // Setzt die Lüftergeschwindigkeit zurück
-    umdrZeit = ((flankenZeit * 4)/1000);      // Berechnung der Zeit pro Umdrehung in Millisekunden
-    rps = (1000/umdrZeit);                    // Umrechnung auf Umdrehungen pro Sekunde
-    rpm = (rps*60);                           // Umrechnung auf Umdrehungen pro Minute
-  }    
-  return rpm;  
-}
+//   if ( fanSpeed < 1 ) {      
+//     rpm = 0;
+//   }
+//   else {
+//     analogWrite(PIN_FAN, 255);                 // Den Lüfter konstant mit Strom versorgen damit das Tachosignal funktioniert
+//     delay(20);
+//     for ( int retryCount=0; retryCount<2; retryCount++ ) {            
+//       flankenZeit = pulseIn(PIN_TACHO, HIGH);    // Abfrage der Zeit pro Puls in Mikrosekunden    
+//       if (flankenZeit>100) {
+//         break;
+//       }      
+//     }      
+//     analogWrite(PIN_FAN, fanSpeed);            // Setzt die Lüftergeschwindigkeit zurück
+//     umdrZeit = ((flankenZeit * 4)/1000);      // Berechnung der Zeit pro Umdrehung in Millisekunden
+//     rps = (1000/umdrZeit);                    // Umrechnung auf Umdrehungen pro Sekunde
+//     rpm = (rps*60);                           // Umrechnung auf Umdrehungen pro Minute
+//   }    
+//   return rpm;  
+// }
 
 void get_hook() {
     if(server.hasArg("fanSpeed")){
@@ -100,14 +100,10 @@ void get_hook() {
     else if (server.hasArg("temperature")) {
       server.send(200, "text/plain", String(temperatureC));      
     }
-    else if (server.hasArg("roundsPerMinute")) {
-      server.send(200, "text/plain", String(getFanRpm()));      
-    }
     else{
       //Wenn gar keine Variablen übergeben wurden
       server.send(200, "text/html", "fanSpeed: " + String(fanSpeed) + "<br>" +
-                                    "temperature: " + String(temperatureC) + "&deg;C" + "<br>" +
-                                    "roundsPerMinute: " + String(getFanRpm()) + "U/min");
+                                    "temperature: " + String(temperatureC) + "&deg;C");
     }
 }
 
@@ -126,8 +122,7 @@ void setup() {
   WiFi.begin(ssid, password);
 
   Serial.print("Verbindung wird hergestellt ...");
-  while (WiFi.status() != WL_CONNECTED)
-  {
+  while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
   }
