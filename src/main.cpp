@@ -10,31 +10,28 @@
 #include <ArduinoOTA.h>
 #include <MyWifiSecrets.h>
 
-#define PIN_FAN D8  //nur Falls du externe LED z.B. an D7 (GPIO13)
-                // über ca. 330 Ohm Widerstand angeschlossen hast auskommentieren
-#define PIN_MOSFET_GATE D6      
+#define PIN_TEMP_SENSOR D2  // GPIO where the DS18B20 is connected to
 #define PIN_TACHO D4
+#define PIN_MOSFET_GATE D6
+#define PIN_FAN D8
 
-// GPIO where the DS18B20 is connected to
-const int oneWireBus = D2;
-const int pwmRange = 1023;
+
 float setpoint = 25.5;   // Diese Variable Deklaration in den Haupttab vor "setup()" verschieben um sie im gesamten Sketch verfügbar zu machen.
-ESP8266WebServer server(80);
+
 const char* ssid = WIFI_SSID;
 const char* password = WIFI_PASSWORD;
-float temperatureC;
-
 
 // Variablen
+float temperatureC;
 int fanSpeed = 160;            // Variable für die Lüftergeschwindigkeit
 int rpm = 0;                   // Variable für die gemittelte Drehzahl
 
 // Setup a oneWire instance to communicate with any OneWire devices
-OneWire oneWire(oneWireBus);
-
+OneWire oneWire(PIN_TEMP_SENSOR);
 // Pass our oneWire reference to Dallas Temperature sensor
 DallasTemperature tempSensors(&oneWire);
 
+ESP8266WebServer server(80);
 
 void setupModify() {
   server.on("/modified", []() {
